@@ -1,4 +1,4 @@
-package bank.accounts.model;
+package bank.accounts.entity;
 
 import lombok.Getter;
 import lombok.Setter;

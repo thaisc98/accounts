@@ -1,4 +1,4 @@
-package bank.accounts.model;
+package bank.accounts.entity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +12,8 @@ import java.util.List;
 @ToString
 @Builder
 public class CustomerDetails {
-
-    private Accounts accounts;
+//
+//    private Accounts accounts;
     private List<Loans> loans;
     private List<Cards> cards;
 

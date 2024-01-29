@@ -1,62 +1,32 @@
 package bank.accounts.controller;
 
-import bank.accounts.config.AccountsServiceConfig;
-import bank.accounts.model.*;
-import bank.accounts.repository.AccountsRepository;
-import bank.accounts.service.CardsFeignClient;
-import bank.accounts.service.LoansFeignClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import bank.accounts.constants.AccountsConstants;
+import bank.accounts.dto.CustomerDto;
+import bank.accounts.dto.ResponseDto;
+import bank.accounts.service.AccountsService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
-
 @RestController
+@RequestMapping(path="/api", produces={MediaType.APPLICATION_JSON_VALUE})
+@AllArgsConstructor
 public class AccountsController {
 
-    private AccountsRepository accountsRepository;
+    private AccountsService accountsService;
 
-    @Autowired
-    AccountsServiceConfig accountsServiceConfig;
-
-    @Autowired
-    CardsFeignClient cardsFeignClient;
-
-    @Autowired
-    LoansFeignClient loansFeignClient;
-
-    public AccountsController(AccountsRepository accountsRepository){
-        this.accountsRepository = accountsRepository;
-    }
-
-    @PostMapping("/my-account")
-    public Accounts getAccountsDetails(@RequestBody Customer customer){
-        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
-        return Objects.nonNull(accounts) ? accounts : null;
-    }
-
-    @GetMapping("/account/properties")
-    public String getPropertyDetails() throws JsonProcessingException {
-        ObjectWriter ow =  new ObjectMapper().writer().withDefaultPrettyPrinter();
-        Properties properties = new Properties(accountsServiceConfig.getMsg(), accountsServiceConfig.getBuildVersion(),
-                accountsServiceConfig.getMailDetails(), accountsServiceConfig.getActiveBranches());
-        return ow.writeValueAsString(properties);
-    }
-
-    @PostMapping("/my-customer-details")
-    public CustomerDetails getCustomerDetails(@RequestBody Customer customer){
-        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
-        List<Loans> loans = loansFeignClient.getLoansDetails(customer);
-        List<Cards> cards = cardsFeignClient.getCardDetails(customer);
-
-        return CustomerDetails.builder().
-                accounts(accounts).loans(loans).cards(cards).build();
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
+        accountsService.createAccount(customerDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
     }
 
 }
