@@ -29,7 +29,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		),
 		externalDocs = @ExternalDocumentation(
 				description = "Bank Accounts microservices REST API Documentation",
-				url ="http://localhost:8080/swagger-ui/index.html#/"
+				url = "http://localhost:8080/swagger-ui/index.html#/"
 		)
 )
 
